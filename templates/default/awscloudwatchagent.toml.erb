@@ -9,6 +9,128 @@
   metric_batch_size = 1000
   metric_buffer_limit = 10000
   omit_hostname = false
-  percision = ""
+  precision = ""
   quiet = false
   round_interval = false
+
+[inputs]
+
+  [[inputs.cpu]]
+    fieldpass = ["usage_idle", "usage_nice", "usage_guest"]
+    interval = "10s"
+    percpu = true
+    totalcpu = false
+    [inputs.cpu.tags]
+      "aws:StorageResolution" = "true"
+      customized_dimension_key_1 = "customized_dimension_value_1"
+      customized_dimension_key_2 = "customized_dimension_value_2"
+
+  [[inputs.disk]]
+    fieldpass = ["free", "total", "used"]
+    ignore_fs = ["sysfs", "devtmpfs"]
+    interval = "60s"
+    mount_points = ["/"]
+    [inputs.disk.tags]
+      customized_dimension_key_3 = "customized_dimension_value_3"
+      customized_dimension_key_4 = "customized_dimension_value_4"
+
+  [[inputs.diskio]]
+    fieldpass = ["reads", "writes", "read_time", "write_time", "io_time"]
+    interval = "60s"
+    report_deltas = true
+
+  [[inputs.mem]]
+    fieldpass = ["used", "cached", "total"]
+    interval = "1s"
+    [inputs.mem.tags]
+      "aws:StorageResolution" = "true"
+
+  [[inputs.net]]
+    fieldpass = ["bytes_sent", "bytes_recv", "drop_in", "drop_out"]
+    interfaces = ["eth0"]
+    report_deltas = true
+    [inputs.net.tags]
+      "aws:StorageResolution" = "true"
+
+  [[inputs.netstat]]
+    fieldpass = ["tcp_established", "tcp_syn_sent", "tcp_close"]
+    interval = "60s"
+
+  [[inputs.processes]]
+    fieldpass = ["running", "sleeping", "dead"]
+    [inputs.processes.tags]
+      "aws:StorageResolution" = "true"
+
+  [[inputs.swap]]
+    fieldpass = ["used", "free", "used_percent"]
+    [inputs.swap.tags]
+      "aws:StorageResolution" = "true"
+
+  [[inputs.tail]]
+    data_format = "value"
+    data_type = "string"
+    file_state_folder = "/opt/aws/amazon-cloudwatch-agent/logs/state"
+    name_override = "raw_log_line"
+
+    [[inputs.tail.file_config]]
+      file_path = "/var/log/messages"
+      from_beginning = true
+      log_group_name = "messages"
+      log_stream_name = "i-04d62997a72b11a1c"
+      pipe = false
+
+    [[inputs.tail.file_config]]
+      file_path = "/var/log/chef-client.log"
+      from_beginning = true
+      log_group_name = "chef-client"
+      log_stream_name = "i-04d62997a72b11a1c"
+      pipe = false
+
+[outputs]
+
+  [[outputs.cloudwatch]]
+    force_flush_interval = "30s"
+    namespace = "CWAgent"
+    region = "us-east-1"
+    rollup_dimensions = [["ImageId"], ["InstanceId", "InstanceType"], ["d1"], []]
+    tagexclude = ["host"]
+
+    [[outputs.cloudwatch.metric_decoration]]
+      category = "cpu"
+      name = "usage_idle"
+      rename = "CPU_USAGE_IDLE"
+      unit = "Percent"
+
+    [[outputs.cloudwatch.metric_decoration]]
+      category = "cpu"
+      name = "usage_nice"
+      unit = "Percent"
+
+    [[outputs.cloudwatch.metric_decoration]]
+      category = "disk"
+      name = "free"
+      rename = "DISK_FREE"
+      unit = "Gigabytes"
+    [outputs.cloudwatch.tagdrop]
+      log_group_name = ["*"]
+
+  [[outputs.cloudwatchlogs]]
+    file_name_field_key = "file_name"
+    file_state_folder = "/opt/aws/amazon-cloudwatch-agent/logs/state"
+    force_flush_interval = "15s"
+    log_entry_field_key = "value"
+    log_group_name_tag_key = "log_group_name"
+    log_stream_name = "testing"
+    log_stream_name_tag_key = "log_stream_name"
+    log_timestamp_field_key = "log_timestamp"
+    offset_field_key = "offset"
+    region = "us-east-1"
+
+[processors]
+
+  [[processors.ec2tagger]]
+    ec2_instance_tag_keys = ["aws:autoscaling:groupName"]
+    ec2_metadata_tags = ["ImageId", "InstanceId", "InstanceType"]
+    refresh_interval_seconds = "2147483647s"
+    [processors.ec2tagger.tagdrop]
+      log_group_name = ["*"]
