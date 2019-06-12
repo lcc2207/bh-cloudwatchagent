@@ -1,5 +1,4 @@
-#
-# Cookbook:: bh-cloudwatchagent
-# Recipe:: default
-#
-# Copyright:: 2019, The Authors, All Rights Reserved.
+aws_cloudwatch_agent 'default' do
+  action :install
+  config 'aws_cloudwatchagent.toml.erb'
+end
