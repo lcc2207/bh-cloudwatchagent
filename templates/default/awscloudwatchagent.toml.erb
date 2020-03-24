@@ -12,7 +12,7 @@
   precision = ""
   quiet = false
   round_interval = false
-
+<%#
 [inputs]
 
   [[inputs.cpu]]
@@ -147,4 +147,4 @@
     ec2_metadata_tags = ["ImageId", "InstanceId", "InstanceType"]
     refresh_interval_seconds = "2147483647s"
     [processors.ec2tagger.tagdrop]
-      log_group_name = ["*"]
+      log_group_name = ["*"] %>
