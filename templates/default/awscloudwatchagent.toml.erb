@@ -80,6 +80,20 @@
       pipe = false
 
     [[inputs.tail.file_config]]
+      file_path = "/var/log/secure"
+      from_beginning = true
+      log_group_name = "secure"
+      log_stream_name = "{instance_id}"
+      pipe = false
+
+    [[inputs.tail.file_config]]
+      file_path = "/var/log/yum.log"
+      from_beginning = true
+      log_group_name = "yum.log"
+      log_stream_name = "{instance_id}"
+      pipe = false
+
+    [[inputs.tail.file_config]]
       file_path = "/var/log/chef-client.log"
       from_beginning = true
       log_group_name = "chef-client"
