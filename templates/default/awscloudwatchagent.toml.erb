@@ -76,14 +76,14 @@
       file_path = "/var/log/messages"
       from_beginning = true
       log_group_name = "messages"
-      log_stream_name = "i-04d62997a72b11a1c"
+      log_stream_name = "{instance_id}"
       pipe = false
 
     [[inputs.tail.file_config]]
       file_path = "/var/log/chef-client.log"
       from_beginning = true
       log_group_name = "chef-client"
-      log_stream_name = "i-04d62997a72b11a1c"
+      log_stream_name = "{instance_id}"
       pipe = false
 
 [outputs]
